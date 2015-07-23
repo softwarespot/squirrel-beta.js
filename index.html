@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+
+    <form data-squirrel="example">
+        <select id="make" name="example-1" onchange="MakeChange();">
+            <option>Select a make</option>
+            <option>Ford</option>
+            <option>Nissan</option>
+        </select>
+
+        <select id="model" name="example-2" disabled>
+            <option>Select a model</option>
+        </select>
+    </form>
+
+    <!--Scripts-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="jquery.squirrel.js"></script>
+
+    <script>
+        var MakeChange = function(){
+            var val = $('#make').val(),
+            $model = $('#model');
+
+            ClearModel();
+            switch (val)
+            {
+                case 'Select a make':
+                break;
+
+                case 'Ford':
+                    $model.append($('<option>Explorer</option>'))
+                    .append($('<option>Taurus</option>'))
+                    .prop('disabled', false);
+                break;
+
+                case 'Nissan':
+                    $model.append($('<option>240SX</option>'))
+                    .append($('<option>Rogue</option>'))
+                    .prop('disabled', false);
+                break;
+            }
+
+        };
+
+        var ClearModel = function(){
+            $('#model').html('<option>Select a model</option>')
+            .prop('disabled', true);
+        }
+    </script>
+
+</body>
+</html>
