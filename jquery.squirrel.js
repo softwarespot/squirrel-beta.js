@@ -92,11 +92,27 @@
 
                     } else {
 
-                        // LOAD VALUES FOR ALL FORMS FROM SESSION STORAGE IN ORDER OF DOM
-                        var $formFields = $form.find('*').filter('input[name], textarea[name], select[name]');
+                        // LOAD VALUES FOR ALL FORMS FROM LOCAL/SESSION STORAGE IN ORDER OF DOM
+                        var $formFields = $form.find('*').filter('input[id], input[name], select[name], select[id], textarea[id], textarea[name]');
                         $formFields.each(function() {
+                            // cache the jQuery object.
                             var $elem = $(this),
+
+                                // get the name attribute.
+                                name = $elem.attr('id'),
+
+                                // declare a variable to hold the value from the storage.
                                 value = null;
+
+                            // if the name attribute doesn't exist, determine the id attribute instead.
+                            if (name === undefined) {
+                                name = $elem.attr('id');
+                            }
+
+                            // a named attribute is required to store the element data.
+                            if (name === undefined) {
+                                return;
+                            }
 
                             switch (this.tagName.toLowerCase()) {
                                 case 'input':
@@ -112,7 +128,7 @@
                                             checkedValue = '';
                                         }
 
-                                        value = stash(storage_key, $elem.attr('name') + checkedValue);
+                                        value = stash(storage_key, name + checkedValue);
 
                                         if (value !== null && value !== this.checked) {
                                             this.checked = (value === true);
@@ -122,7 +138,7 @@
                                     } else if (type === 'radio') {
 
                                         // radio buttons.
-                                        value = stash(storage_key, $elem.attr('name'));
+                                        value = stash(storage_key, name);
 
                                         if (value !== null && value !== this.checked) {
                                             this.checked = ($elem.val() === value);
@@ -132,7 +148,7 @@
                                     } else {
 
                                         // load text values from session storage.
-                                        value = stash(storage_key, $elem.attr('name'));
+                                        value = stash(storage_key, name);
 
                                         if (value !== null && !$elem.is('[readonly]') && $elem.is(':enabled') && $elem.val() !== value) {
                                             $elem.val(value).trigger('change');
@@ -143,7 +159,7 @@
 
                                 case 'select':
                                     // set select values on load.
-                                    value = stash(storage_key, $elem.attr('name'));
+                                    value = stash(storage_key, name);
 
                                     if (value !== null) {
                                         $.each(typeof(value) !== 'object' ? [value] : value, function(index, option) {
@@ -160,8 +176,24 @@
                         // UPDATE VALUES FOR ALL FIELDS ON CHANGE.
                         // track changes in fields and store values as they're typed.
                         $form.find('input[type!=file]:not(.squirrel-ignore), select:not(.squirrel-ignore), textarea:not(.squirrel-ignore)').on('blur keyup change', function() {
+                            // cache the jQuery object.
                             var $elem = $(this),
-                                stashName = (this.type === 'checkbox' && $elem.attr('value') !== undefined) ? $elem.attr('name') + $elem.attr('value') : $elem.attr('name');
+
+                                // get the name attribute.
+                                name = $elem.attr('name');
+
+                            // if the name attribute doesn't exist, determine the id attribute instead.
+                            if (name === undefined) {
+                                name = $elem.attr('id');
+                            }
+
+                            // a named attribute is required to store the element data.
+                            if (name === undefined) {
+                                return;
+                            }
+
+                            var value = $elem.attr('value');
+                            stashName = (this.type === 'checkbox' && value !== undefined) ? name + value : name;
 
                             stash(storage_key, stashName, this.type === 'checkbox' ? $elem.prop('checked') : $elem.val());
                         });
