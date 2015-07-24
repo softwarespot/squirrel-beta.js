@@ -192,8 +192,8 @@
                                 return;
                             }
 
-                            var value = $elem.attr('value');
-                            stashName = (this.type === 'checkbox' && value !== undefined) ? name + value : name;
+                            var value = $elem.attr('value'),
+                                stashName = (this.type === 'checkbox' && value !== undefined) ? name + value : name;
 
                             stash(storage_key, stashName, this.type === 'checkbox' ? $elem.prop('checked') : $elem.val());
                         });
