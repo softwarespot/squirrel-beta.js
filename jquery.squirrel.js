@@ -213,7 +213,8 @@
                         // clear storage on submit as well.
                         $form.submit(function() {
 
-                            if (options.clear_on_submit) {
+                            // if not boolean dataype or is true, then unstach the storage key.
+                            if (typeof(options.clear_on_submit) !== 'boolean' || options.clear_on_submit) {
 
                                 unstash(storage_key);
 
