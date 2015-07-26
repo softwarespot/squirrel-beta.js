@@ -101,7 +101,7 @@
                             var $elem = $(this),
 
                                 // get the name attribute.
-                                name = $elem.attr('id'),
+                                name = $elem.attr('name'),
 
                                 // declare a variable to hold the value from the storage.
                                 value = null;
