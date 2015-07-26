@@ -71,8 +71,8 @@
 
                     };
 
-                    // check the action is valid and convert to lowercase.
-                    action = typeof(action) === 'string' && /(?:clear|stop)/i.test(action) ? action.toLowerCase() : 'ini';
+                // check the action is valid and convert to lowercase.
+                action = typeof(action) === 'string' && /^(?:clear|stop)$/i.test(action) ? action.toLowerCase() : 'ini';
 
                 // iterate through all the matching elements and return
                 // the jQuery object to preserve chaining.
@@ -234,6 +234,7 @@
                                 }
 
                             });
+                            break;
 
                     } // end actions.
 
