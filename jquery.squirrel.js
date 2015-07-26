@@ -164,11 +164,13 @@
                                     value = stash(storage_key, name);
 
                                     if (value !== null) {
+
                                         $.each(typeof(value) !== 'object' ? [value] : value, function(index, option) {
                                             $elem.find('option').filter(function() {
                                                 var $option = $(this);
                                                 return ($option.val() === option || $option.html() === option);
                                             }).prop('selected', true).trigger('change');
+
                                         });
                                     }
                                     break;
