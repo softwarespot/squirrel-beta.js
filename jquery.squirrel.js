@@ -111,7 +111,7 @@
                                 name = $elem.attr('id');
                             }
 
-                            // a named attribute is required to store the element data.
+                            // a name attribute is required to store the element data.
                             if (name === undefined) {
                                 return;
                             }
@@ -191,12 +191,15 @@
                                 name = $elem.attr('id');
                             }
 
-                            // a named attribute is required to store the element data.
+                            // a name attribute is required to store the element data.
                             if (name === undefined) {
                                 return;
                             }
 
+                            // get the value attribute.
                             var value = $elem.attr('value'),
+
+                                // pre-append the name attribute with the value if a checkbox; otherwise use the name only.
                                 stashName = (this.type === 'checkbox' && value !== undefined) ? name + value : name;
 
                             stash(storage_key, stashName, this.type === 'checkbox' ? $elem.prop('checked') : $elem.val());
