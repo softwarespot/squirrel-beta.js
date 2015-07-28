@@ -70,7 +70,7 @@
                     };
 
                 // check the action is valid and convert to lowercase.
-                action = typeof(action) === 'string' && /^(?:clear|stop)$/i.test(action) ? action.toLowerCase() : 'init';
+                action = typeof(action) === 'string' && /^(?:clear|stop)$/i.test(action) ? action.toLowerCase() : 'start';
 
                 // strings related to the find functions and event handling.
                 var eventFields = 'input[type!=file]:not(.squirrel-ignore), select:not(.squirrel-ignore), textarea:not(.squirrel-ignore)',
