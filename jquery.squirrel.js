@@ -70,7 +70,7 @@
                     };
 
                 // check the action is valid and convert to lowercase.
-                action = typeof(action) === 'string' && /^(?:clear|stop)$/i.test(action) ? action.toLowerCase() : 'ini';
+                action = typeof(action) === 'string' && /^(?:clear|stop)$/i.test(action) ? action.toLowerCase() : 'init';
 
                 // iterate through all the matching elements and return
                 // the jQuery object to preserve chaining.
@@ -98,7 +98,7 @@
 
                         default:
                             // LOAD VALUES FOR ALL FORMS FROM LOCAL/SESSION STORAGE IN ORDER OF DOM
-                            var $formFields = $form.find('*').filter('input[id], input[name], select[name], select[id], textarea[id], textarea[name]');
+                            var $formFields = $form.find('*').filter('input[id], input[name], select[id], select[name], textarea[id], textarea[name]');
                             $formFields.each(function() {
 
                                 // cache the jQuery object.
