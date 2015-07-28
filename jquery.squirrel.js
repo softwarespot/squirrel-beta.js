@@ -72,6 +72,11 @@
                 // check the action is valid and convert to lowercase.
                 action = typeof(action) === 'string' && /^(?:clear|stop)$/i.test(action) ? action.toLowerCase() : 'init';
 
+                // strings related to the find functions and event handling.
+                var eventFields = 'input[type!=file]:not(.squirrel-ignore), select:not(.squirrel-ignore), textarea:not(.squirrel-ignore)',
+                    eventReset = 'button[type=reset], input[type=reset]',
+                    findFields = 'input[id], input[name], select[id], select[name], textarea[id], textarea[name]';
+
                 // iterate through all the matching elements and return
                 // the jQuery object to preserve chaining.
                 return this.each(function() {
@@ -91,14 +96,14 @@
 
                         case 'stop':
                             // stop the registered events if 'stop' is passed.
-                            $form.find('input[type!=file]:not(.squirrel-ignore), select:not(.squirrel-ignore), textarea:not(.squirrel-ignore)').off('blur.squirrel.js keyup.squirrel.js change.squirrel.js');
-                            $form.find('button[type=reset], input[type=reset]').off('click.squirrel.js');
+                            $form.find(eventFields).off('blur.squirrel.js keyup.squirrel.js change.squirrel.js');
+                            $form.find(eventReset).off('click.squirrel.js');
                             $form.off('submit.squirrel.js');
                             break;
 
                         default:
                             // LOAD VALUES FOR ALL FORMS FROM LOCAL/SESSION STORAGE IN ORDER OF DOM
-                            var $formFields = $form.find('*').filter('input[id], input[name], select[id], select[name], textarea[id], textarea[name]');
+                            var $formFields = $form.find('*').filter(findFields);
                             $formFields.each(function() {
 
                                 // cache the jQuery object.
@@ -185,7 +190,7 @@
 
                             // UPDATE VALUES FOR ALL FIELDS ON CHANGE.
                             // track changes in fields and store values as they're typed.
-                            $form.find('input[type!=file]:not(.squirrel-ignore), select:not(.squirrel-ignore), textarea:not(.squirrel-ignore)').on('blur.squirrel.js keyup.squirrel.js change.squirrel.js', function() {
+                            $form.find(eventFields).on('blur.squirrel.js keyup.squirrel.js change.squirrel.js', function() {
 
                                 // cache the jQuery object.
                                 var $elem = $(this),
@@ -215,7 +220,7 @@
 
                             // when the reset button is clicked, clear the sessionStorage as well
                             // so it doesn't creepily load on next refresh.
-                            $form.find('button[type=reset], input[type=reset]').on('click.squirrel.js', function() {
+                            $form.find(eventReset).on('click.squirrel.js', function() {
 
                                 unstash(storage_key);
 
