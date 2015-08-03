@@ -3,7 +3,7 @@
  * http://github.com/jpederson/Squirrel.js
  * Author: James Pederson (jpederson.com)
  * Licensed under the MIT, GPL licenses.
- * Version: 0.1.6
+ * Version: 0.1.7
  */
 ; (function($, window, document, undefined) {
 
@@ -24,7 +24,7 @@
                 if (typeof(storage) === 'undefined') {
 
                     // to maintain chaining in jQuery.
-                    return $(this);
+                    return this;
 
                 }
 
