@@ -3,7 +3,7 @@
  * http://github.com/jpederson/Squirrel.js
  * Author: James Pederson (jpederson.com)
  * Licensed under the MIT, GPL licenses.
- * Version: 0.1.7
+ * Version: 0.1.8-beta
  */
 ; (function($, window, document, undefined) {
 
@@ -17,11 +17,23 @@
                 // parameter we pass into this function.
                 options = $.extend({}, $.fn.squirrel.options, options);
 
-                // get the storage property.
-                var storage = typeof(options.storage_method) === 'string' && options.storage_method.toUpperCase() === 'LOCAL' ? window.localStorage : window.sessionStorage;
+                // initialize as null by default.
+                var storage = null;
 
-                // we're doing nothing if we don't have a valid sessionStorage or localStorage object.
-                if (typeof(storage) === 'undefined') {
+                // either 'local' or 'session' has been passed if this is true.
+                if (typeof(options.storage_method) === 'string') {
+
+                    storage = options.storage_method.toUpperCase() === 'LOCAL' ? window.localStorage : window.sessionStorage;
+
+                // an object that could be a valid storage object has been passed.
+                } else if (options.storage_method !== null && typeof(options.storage_method) === 'object' ) {
+
+                    storage = options.storage_method;
+
+                }
+
+                // if null or the storage object does not contain the valid functions required, then return this.
+                if (storage === null || !(typeof(storage) === 'object' && 'getItem' in storage && 'removeItem' in storage && 'setItem' in storage)) {
 
                     // to maintain chaining in jQuery.
                     return this;
@@ -29,7 +41,7 @@
                 }
 
                 // check the action is valid and convert to uppercase.
-                action = typeof(action) === 'string' && /^(?:CLEAR|STOP)$/i.test(action) ? action.toUpperCase() : 'START';
+                action = typeof(action) === 'string' && /^(?:CLEAR|REMOVE|OFF|STOP)$/i.test(action) ? action.toUpperCase() : 'START';
 
                 // strings related to the find functions and event handling.
                 var eventFields = 'input[type!=file]:not(.squirrel-ignore), select:not(.squirrel-ignore), textarea:not(.squirrel-ignore)',
@@ -50,10 +62,12 @@
 
                     switch (action) {
                         case 'CLEAR':
+                        case 'REMOVE':
                             // clear the storage if a 'clear' action is passed.
                             unstash(storage, storage_key);
                             break;
 
+                        case 'OFF':
                         case 'STOP':
                             // stop the registered events if a 'stop' action is passed.
                             $form.find(eventFields).off('blur.squirrel.js keyup.squirrel.js change.squirrel.js');
