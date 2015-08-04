@@ -62,7 +62,7 @@
 
                     // check for the data-squirrel attribute.
                     var dataAttribute = $form.attr('data-squirrel'),
-                        storage_key = dataAttribute ? dataAttribute + options.storage_key_prefix: options.storage_key;
+                        storage_key = options.storage_key_prefix + (dataAttribute ? dataAttribute: options.storage_key);
 
                     switch (action) {
                         case 'CLEAR':
