@@ -28,7 +28,7 @@
 
                     storage = options.storage_method.toUpperCase() === 'LOCAL' ? window.localStorage : window.sessionStorage;
 
-                    // an object that could be a valid storage object has been passed.
+                // an object that could be a valid storage object has been passed.
                 } else if (options.storage_method !== null && isObject(options.storage_method)) {
 
                     storage = options.storage_method;
@@ -155,7 +155,7 @@
 
                                         if (value !== null) {
 
-                                            $.each(!$.isArray(value) ? [value] : value, function (_, option) { // _ is index, though is unused in this instance.
+                                            $.each(!$.isArray(value) ? [value] : value, function (index, option) {
 
                                                 $elem.find('option').filter(function () {
 
@@ -328,7 +328,7 @@
     // onload.
     $(function () {
 
-        // load all forms that have the squirrel class or data-squirrel attribute associated with them.
+        // load all forms that have the squirrel class  or data-squirrel attribute associated with them.
         $('form.squirrel, form[data-squirrel]').squirrel();
 
     });
