@@ -89,7 +89,6 @@
 
                         default:
                             // LOAD VALUES FOR ALL FORMS FROM LOCAL/SESSION STORAGE IN ORDER OF THE DOM
-
                             $form.find('*')
                                 .filter(findFields)
                                 .each(function () {
@@ -101,7 +100,6 @@
                                     var name = $element.attr('name');
 
                                     // if the name attribute doesn't exist, determine the id attribute instead.
-
                                     if (isUndefined(name)) {
                                         name = $element.attr('id');
 
@@ -111,7 +109,6 @@
                                             // return $form to maintain chaining in jQuery.
                                             return $form;
                                         }
-
                                     }
 
                                     // declare a variable to hold the value from the storage.
