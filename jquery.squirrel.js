@@ -71,12 +71,14 @@
                     switch (action) {
                         case 'CLEAR':
                         case 'REMOVE':
+
                             // clear the storage if a 'clear' action is passed.
                             unstash(storage, storage_key);
                             break;
 
                         case 'OFF':
                         case 'STOP':
+
                             // stop the registered events if a 'stop' action is passed.
                             $form.find(eventFields).off('blur.squirrel.js keyup.squirrel.js change.squirrel.js');
                             $form.find(eventReset).off('click.squirrel.js');
@@ -84,6 +86,7 @@
                             break;
 
                         default:
+
                             // LOAD VALUES FOR ALL FORMS FROM LOCAL/SESSION STORAGE IN ORDER OF THE DOM
                             $form.find('*').filter(findFields).each(function eachNode() {
 
@@ -157,9 +160,11 @@
                                             }
 
                                         }
+
                                         break;
 
                                     case 'SELECT':
+
                                         // set the select values on load.
                                         value = stash(storage, storage_key, name);
 
@@ -169,18 +174,20 @@
 
                                                 $element.find('option').filter(function eachOption() {
 
-                                                        var $option = $(this);
-                                                        return ($option.val() === option || $option.html() === option);
+                                                    var $option = $(this);
+                                                    return ($option.val() === option || $option.html() === option);
 
-                                                    })
-                                                    // set selected to true.
-                                                    .prop('selected', true)
+                                                })
+
+                                                // set selected to true.
+                                                .prop('selected', true)
 
                                                 // trigger the 'change' event.
                                                 .trigger('change');
 
                                             });
                                         }
+
                                         break;
                                 }
 
@@ -235,6 +242,7 @@
                                 }
 
                             });
+
                             break;
 
                     } // end actions.
@@ -248,10 +256,10 @@
     // METHODS
 
     // stash or grab a value from our session store object.
-    function stash(storage, storage_key, key, value) {
+    function stash(storage, storageKey, key, value) {
 
         // get the squirrel storage object.
-        var store = window.JSON.parse(storage.getItem(storage_key));
+        var store = window.JSON.parse(storage.getItem(storageKey));
 
         // if it doesn't exist, create an empty object.
         if (store === null) {
@@ -281,7 +289,7 @@
         $.extend(store, append);
 
         // re-session the squirrel store again.
-        storage.setItem(storage_key, window.JSON.stringify(store));
+        storage.setItem(storageKey, window.JSON.stringify(store));
 
         // return the value.
         return value;
@@ -289,10 +297,10 @@
     }
 
     // clear the sessionStorage key based on the options specified.
-    function unstash(storage, storage_key) {
+    function unstash(storage, storageKey) {
 
         // clear value for our storage key.
-        storage.removeItem(storage_key);
+        storage.removeItem(storageKey);
 
     }
 
@@ -351,3 +359,4 @@
     });
 
 })(this, this.jQuery);
+
