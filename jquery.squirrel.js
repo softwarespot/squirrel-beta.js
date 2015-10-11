@@ -15,243 +15,257 @@
         // naming our jQuery plugin function.
         squirrel: function squirrel(action, options) {
 
-                // set our options from the defaults, overriding with the
-                // parameter we pass into this function.
-                options = $.extend({}, $.fn.squirrel.options, options);
+            // set our options from the defaults, overriding with the
+            // parameter we pass into this function.
+            options = $.extend({}, $.fn.squirrel.options, options);
 
-                // initialize as null by default.
-                var storage = null;
+            /* jscs: disable */
 
-                // either 'local' or 'session' has been passed if this is true.
-                if (isString(options.storage_method)) {
+            // jscs only workaround
+            options.clearOnSubmit = options.clear_on_submit;
+            options.storageMethod = options.storage_method;
+            options.storageKey = options.storage_key;
+            options.storageKeyPrefix = options.storage_key_prefix;
+            /* jscs: enable */
 
-                    storage = options.storage_method.toUpperCase() === 'LOCAL' ? window.localStorage : window.sessionStorage;
+            // initialize as null by default.
+            var storage = null;
 
-                    // an object that could be a valid storage object has been passed.
-                } else if (options.storage_method !== null && isObject(options.storage_method)) {
+            // either 'local' or 'session' has been passed if this is true.
+            if (isString(options.storageMethod)) {
 
-                    storage = options.storage_method;
+                storage = options.storageMethod.toUpperCase() === 'LOCAL' ? window.localStorage : window.sessionStorage;
 
-                }
+                // an object that could be a valid storage object has been passed.
+            } else if (options.storageMethod !== null && isObject(options.storageMethod)) {
 
-                // if null or the storage object doesn't contain the valid functions required, then return this.
-                if (storage === null || !(isObject(storage) && 'getItem' in storage && 'removeItem' in storage && 'setItem' in storage)) {
+                storage = options.storageMethod;
 
-                    // to maintain chaining in jQuery.
-                    return this;
+            }
 
-                }
+            // if null or the storage object doesn't contain the valid functions required, then return this.
+            if (storage === null || !(isObject(storage) && 'getItem' in storage && 'removeItem' in storage && 'setItem' in storage)) {
 
-                // check the action is valid and convert to uppercase.
-                action = isString(action) && /^(?:CLEAR|REMOVE|OFF|STOP)$/i.test(action) ? action.toUpperCase() : 'START';
+                // to maintain chaining in jQuery.
+                return this;
 
-                // strings related to the find functions and event handling.
-                var eventFields = 'input[type!=file]:not(.squirrel-ignore), select:not(.squirrel-ignore), textarea:not(.squirrel-ignore)';
-                var eventReset = 'button[type=reset], input[type=reset]';
-                var findFields = 'input[id], input[name], select[id], select[name], textarea[id], textarea[name]';
+            }
 
-                // sanitize the options strings.
-                options.storage_key = sanitizeOption(options.storage_key, 'squirrel');
-                options.storage_key_prefix = sanitizeOption(options.storage_key_prefix, '');
+            // check the action is valid and convert to uppercase.
+            action = isString(action) && _regExp.ACTION.test(action) ? action.toUpperCase() : 'START';
 
-                // iterate through all the matching elements and return
-                // the jQuery object to preserve chaining in jQuery.
-                return this.each(function eachForm() {
+            // strings related to the find functions and event handling.
+            var eventFields = 'input[type!=file]:not(.squirrel-ignore), select:not(.squirrel-ignore), textarea:not(.squirrel-ignore)';
+            var eventReset = 'button[type=reset], input[type=reset]';
+            var findFields = 'input[id], input[name], select[id], select[name], textarea[id], textarea[name]';
 
-                    // store a jQuery object for the form so we can use it
-                    // inside the other bindings.
-                    var $form = $(this);
+            // sanitize the options strings.
+            options.storageKey = sanitizeOption(options.storageKey, 'squirrel');
+            options.storageKeyPrefix = sanitizeOption(options.storageKeyPrefix, '');
 
-                    // check for the data-squirrel attribute.
-                    var dataAttribute = $form.attr('data-squirrel');
+            // iterate through all the matching elements and return
+            // the jQuery object to preserve chaining in jQuery.
+            return this.each(function eachForm() {
 
-                    // append the custom prefix and determine if the data attribute is valid.
-                    var storage_key = options.storage_key_prefix + (isString(dataAttribute) ? dataAttribute : options.storage_key);
+                // store a jQuery object for the form so we can use it
+                // inside the other bindings.
+                var $form = $(this);
 
-                    switch (action) {
-                        case 'CLEAR':
-                        case 'REMOVE':
+                // check for the data-squirrel attribute.
+                var dataAttribute = $form.attr('data-squirrel');
 
-                            // clear the storage if a 'clear' action is passed.
-                            unstash(storage, storage_key);
-                            break;
+                // append the custom prefix and determine if the data attribute is valid.
+                var storageKey = options.storageKeyPrefix + (isString(dataAttribute) ? dataAttribute : options.storageKey);
 
-                        case 'OFF':
-                        case 'STOP':
+                switch (action) {
+                    case 'CLEAR':
+                    case 'REMOVE':
 
-                            // stop the registered events if a 'stop' action is passed.
-                            $form.find(eventFields).off('blur.squirrel.js keyup.squirrel.js change.squirrel.js');
-                            $form.find(eventReset).off('click.squirrel.js');
-                            $form.off('submit.squirrel.js');
-                            break;
+                        // clear the storage if a 'clear' action is passed.
+                        unstash(storage, storageKey);
+                        break;
 
-                        default:
+                    case 'OFF':
+                    case 'STOP':
 
-                            // LOAD VALUES FOR ALL FORMS FROM LOCAL/SESSION STORAGE IN ORDER OF THE DOM
-                            $form.find('*').filter(findFields).each(function eachNode() {
+                        // stop the registered events if a 'stop' action is passed.
+                        $form.find(eventFields).off('blur.squirrel.js keyup.squirrel.js change.squirrel.js');
+                        $form.find(eventReset).off('click.squirrel.js');
+                        $form.off('submit.squirrel.js');
+                        break;
 
-                                // cache the jQuery object.
-                                var $element = $(this);
+                    default:
 
-                                // get the name attribute.
-                                var name = $element.attr('name');
+                        // LOAD VALUES FOR ALL FORMS FROM LOCAL/SESSION STORAGE IN ORDER OF THE DOM
+                        $form.find('*').filter(findFields).each(function eachNode() {
 
-                                // if the name attribute doesn't exist, determine the id attribute instead.
+                            // cache the jQuery object.
+                            var $element = $(this);
+
+                            // get the name attribute.
+                            var name = $element.attr('name');
+
+                            // if the name attribute doesn't exist, determine the id attribute instead.
+                            if (isUndefined(name)) {
+                                name = $element.attr('id');
+
+                                // a name attribute is required to store the element data.
                                 if (isUndefined(name)) {
-                                    name = $element.attr('id');
 
-                                    // a name attribute is required to store the element data.
-                                    if (isUndefined(name)) {
-
-                                        // return $form to maintain chaining in jQuery.
-                                        return $form;
-                                    }
+                                    // return $form to maintain chaining in jQuery.
+                                    return $form;
                                 }
+                            }
 
-                                // declare a variable to hold the value from the storage.
-                                var value = null;
+                            // declare a variable to hold the value from the storage.
+                            var value = null;
 
-                                // tagName returns an uppercase value in HTML5.
-                                switch (this.tagName) {
-                                    case 'INPUT':
-                                    case 'TEXTAREA':
-                                        var type = $element.attr('type');
+                            // tagName returns an uppercase value in HTML5.
+                            switch (this.tagName) {
+                                case 'INPUT':
+                                case 'TEXTAREA':
+                                    var type = $element.attr('type');
 
-                                        if (type === 'checkbox') {
+                                    if (type === 'checkbox') {
 
-                                            // checkboxes.
-                                            var checkedValue = $element.attr('value');
+                                        // checkboxes.
+                                        var checkedValue = $element.attr('value');
 
-                                            if (!isString(checkedValue)) {
-                                                checkedValue = '';
-                                            }
-
-                                            value = stash(storage, storage_key, name + checkedValue);
-
-                                            if (value !== null && value !== this.checked) {
-                                                // set the checkbox state to 'true', if the value is true
-                                                this.checked = (value === true);
-
-                                                // trigger the 'change' event.
-                                                $element.trigger('change');
-                                            }
-
-                                        } else if (type === 'radio') {
-
-                                            // radio buttons.
-                                            value = stash(storage, storage_key, name);
-
-                                            if (value !== null && value !== this.checked) {
-                                                this.checked = ($element.val() === value);
-
-                                                // trigger the 'change' event.
-                                                $element.trigger('change');
-                                            }
-
-                                        } else {
-
-                                            // load the text values from the storage.
-                                            value = stash(storage, storage_key, name);
-
-                                            if (value !== null && !$element.is('[readonly]') && $element.is(':enabled') && $element.val() !== value) {
-
-                                                // set the value and trigger the 'change' event.
-                                                $element.val(value).trigger('change');
-                                            }
-
+                                        if (!isString(checkedValue)) {
+                                            checkedValue = '';
                                         }
 
-                                        break;
+                                        value = stash(storage, storageKey, name + checkedValue);
 
-                                    case 'SELECT':
+                                        if (value !== null && value !== this.checked) {
+                                            // set the checkbox state to 'true', if the value is true
+                                            this.checked = (value === true);
 
-                                        // set the select values on load.
-                                        value = stash(storage, storage_key, name);
-
-                                        if (value !== null) {
-
-                                            $.each(!$.isArray(value) ? [value] : value, function eachValue(index, option) {
-
-                                                $element.find('option').filter(function eachOption() {
-
-                                                    var $option = $(this);
-                                                    return ($option.val() === option || $option.html() === option);
-
-                                                })
-
-                                                // set selected to true.
-                                                .prop('selected', true)
-
-                                                // trigger the 'change' event.
-                                                .trigger('change');
-
-                                            });
+                                            // trigger the 'change' event.
+                                            $element.trigger('change');
                                         }
 
-                                        break;
-                                }
+                                    } else if (type === 'radio') {
 
-                            });
+                                        // radio buttons.
+                                        value = stash(storage, storageKey, name);
 
-                            // UPDATE VALUES FOR ALL FIELDS ON CHANGE.
-                            // track changes in fields and store values as they're typed.
-                            $form.find(eventFields).on('blur.squirrel.js keyup.squirrel.js change.squirrel.js', function onEvent() {
+                                        if (value !== null && value !== this.checked) {
+                                            this.checked = ($element.val() === value);
 
-                                // cache the jQuery object.
-                                var $element = $(this);
+                                            // trigger the 'change' event.
+                                            $element.trigger('change');
+                                        }
 
-                                // get the name attribute.
-                                var name = $element.attr('name');
+                                    } else {
 
-                                // if the name attribute doesn't exist, determine the id attribute instead.
-                                if (isUndefined(name)) {
-                                    // get the id attribute.
-                                    name = $element.attr('id');
+                                        // load the text values from the storage.
+                                        value = stash(storage, storageKey, name);
 
-                                    // a name attribute is required to store the element data.
-                                    if (isUndefined(name)) {
-                                        return;
+                                        if (value !== null && !$element.is('[readonly]') && $element.is(':enabled') && $element.val() !== value) {
+
+                                            // set the value and trigger the 'change' event.
+                                            $element.val(value).trigger('change');
+                                        }
+
                                     }
+
+                                    break;
+
+                                case 'SELECT':
+
+                                    // set the select values on load.
+                                    value = stash(storage, storageKey, name);
+
+                                    if (value !== null) {
+
+                                        $.each(($.isArray(value) ? value : [value]), function eachValue(index, option) {
+
+                                            $element.find('option').filter(function eachOption() {
+
+                                                var $option = $(this);
+                                                return ($option.val() === option || $option.html() === option);
+
+                                            })
+
+                                            // set selected to true.
+                                            .prop('selected', true)
+
+                                            // trigger the 'change' event.
+                                            .trigger('change');
+
+                                        });
+                                    }
+
+                                    break;
+                            }
+
+                        });
+
+                        // UPDATE VALUES FOR ALL FIELDS ON CHANGE.
+                        // track changes in fields and store values as they're typed.
+                        $form.find(eventFields).on('blur.squirrel.js keyup.squirrel.js change.squirrel.js', function onEvent() {
+
+                            // cache the jQuery object.
+                            var $element = $(this);
+
+                            // get the name attribute.
+                            var name = $element.attr('name');
+
+                            // if the name attribute doesn't exist, determine the id attribute instead.
+                            if (isUndefined(name)) {
+                                // get the id attribute.
+                                name = $element.attr('id');
+
+                                // a name attribute is required to store the element data.
+                                if (isUndefined(name)) {
+                                    return;
                                 }
+                            }
 
-                                // get the value attribute.
-                                var value = $element.attr('value');
+                            // get the value attribute.
+                            var value = $element.attr('value');
 
-                                // pre-append the name attribute with the value if a checkbox; otherwise, use the name only.
-                                var stashName = (this.type === 'checkbox' && !isUndefined(value)) ? name + value : name;
+                            // pre-append the name attribute with the value if a checkbox; otherwise, use the name only.
+                            var stashName = (this.type === 'checkbox' && !isUndefined(value)) ? name + value : name;
 
-                                stash(storage, storage_key, stashName, this.type === 'checkbox' ? $element.prop('checked') : $element.val());
+                            stash(storage, storageKey, stashName, this.type === 'checkbox' ? $element.prop('checked') : $element.val());
 
-                            });
+                        });
 
-                            // when the reset button is clicked, clear the storage.
-                            $form.find(eventReset).on('click.squirrel.js', function onClick() {
+                        // when the reset button is clicked, clear the storage.
+                        $form.find(eventReset).on('click.squirrel.js', function onClick() {
 
-                                unstash(storage, storage_key);
+                            unstash(storage, storageKey);
 
-                            });
+                        });
 
-                            // clear the storage on submit.
-                            $form.on('submit.squirrel.js', function onClick() {
+                        // clear the storage on submit.
+                        $form.on('submit.squirrel.js', function onClick() {
 
-                                // if not a boolean datatype or is equal to true, then clear the storage.
-                                if (!isBoolean(options.clear_on_submit) || options.clear_on_submit) {
+                            // if not a boolean datatype or is equal to true, then clear the storage.
+                            if (!isBoolean(options.clearOnSubmit) || options.clearOnSubmit) {
 
-                                    unstash(storage, storage_key);
+                                unstash(storage, storageKey);
 
-                                }
+                            }
 
-                            });
+                        });
 
-                            break;
+                        break;
 
-                    } // end actions.
+                } // end actions.
 
-                }); // return each plugin call.
+            }); // return each plugin call.
 
-            } // end plugin function.
+        } // end plugin function.
 
     }); // end jQuery extend.
+
+    // REGULAR EXPRESSIONS
+    var _regExp = {
+        ACTION: /^(?:CLEAR|REMOVE|OFF|STOP)$/i
+    };
 
     // METHODS
 
@@ -343,12 +357,14 @@
     // DEFAULTS
 
     // default options for squirrel.js.
+    /* jscs: disable */
     $.fn.squirrel.options = {
         clear_on_submit: true,
         storage_method: 'session',
         storage_key: 'squirrel',
         storage_key_prefix: ''
     };
+    /* jscs: enable */
 
     // onload.
     $(function () {
@@ -359,4 +375,3 @@
     });
 
 })(this, this.jQuery);
-
