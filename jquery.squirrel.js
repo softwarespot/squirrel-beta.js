@@ -52,7 +52,7 @@
             }
 
             // check the action is valid and convert to uppercase.
-            action = isString(action) && _regExp.ACTION.test(action) ? action.toUpperCase() : 'START';
+            action = isString(action) && _reAction.test(action) ? action.toUpperCase() : 'START';
 
             // strings related to the find functions and event handling.
             var eventFields = 'input[type!=file]:not(.squirrel-ignore), select:not(.squirrel-ignore), textarea:not(.squirrel-ignore)';
@@ -89,9 +89,9 @@
                     case 'STOP':
 
                         // stop the registered events if a 'stop' action is passed.
-                        $form.find(eventFields).off(_events.CHANGE);
-                        $form.find(eventReset).off(_events.CLICK);
-                        $form.off(_events.SUBMIT);
+                        $form.find(eventFields).off(_eventsChange);
+                        $form.find(eventReset).off(_eventsClick);
+                        $form.off(_eventsSubmit);
                         break;
 
                     default:
@@ -204,7 +204,7 @@
 
                         // UPDATE VALUES FOR ALL FIELDS ON CHANGE.
                         // track changes in fields and store values as they're typed.
-                        $form.find(eventFields).on(_events.CHANGE, function onEvent() {
+                        $form.find(eventFields).on(_eventsChange, function onEvent() {
 
                             // cache the jQuery object.
                             var $element = $(this);
@@ -234,14 +234,14 @@
                         });
 
                         // when the reset button is clicked, clear the storage.
-                        $form.find(eventReset).on(_events.CLICK, function onClick() {
+                        $form.find(eventReset).on(_eventsClick, function onClick() {
 
                             unstash(storage, storageKey);
 
                         });
 
                         // clear the storage on submit.
-                        $form.on(_events.SUBMIT, function onClick() {
+                        $form.on(_eventsSubmit, function onClick() {
 
                             // if not a boolean datatype or is equal to true, then clear the storage.
                             if (!isBoolean(options.clearOnSubmit) || options.clearOnSubmit) {
@@ -263,16 +263,12 @@
     }); // end jQuery extend.
 
     // EVENTS
-    var _events = {
-        CLICK: 'click.squirrel.js',
-        CHANGE: 'blur.squirrel.js keyup.squirrel.js change.squirrel.js',
-        SUBMIT: 'submit.squirrel.js',
-    };
+    var _eventsClick = 'click.squirrel.js';
+    var _eventsChange = 'blur.squirrel.js keyup.squirrel.js change.squirrel.js';
+    var _eventsSubmit = 'submit.squirrel.js';
 
     // REGULAR EXPRESSIONS
-    var _regExp = {
-        ACTION: /^(?:CLEAR|REMOVE|OFF|STOP)$/i,
-    };
+    var _reAction = /^(?:CLEAR|REMOVE|OFF|STOP)$/i;
 
     // METHODS
 
@@ -382,3 +378,4 @@
     });
 
 })(window, window.jQuery);
+
