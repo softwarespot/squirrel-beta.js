@@ -5,7 +5,6 @@
  * Licensed under the MIT, GPL licenses.
  * Version: 0.1.8
  */
-; // jshint ignore:line
 (function jQuerySquirrelNamespace(window, $) {
 
     // PLUGIN LOGIC
@@ -19,14 +18,14 @@
             // parameter we pass into this function.
             options = $.extend({}, $.fn.squirrel.options, options);
 
-            /* jscs: disable */
+            /* eslint-disable */
 
-            // jscs only workaround
+            // ESLint only workaround
             options.clearOnSubmit = options.clear_on_submit;
             options.storageMethod = options.storage_method;
             options.storageKey = options.storage_key;
             options.storageKeyPrefix = options.storage_key_prefix;
-            /* jscs: enable */
+            /* eslint-enable */
 
             // initialize as null by default.
             var storage = null;
@@ -379,14 +378,14 @@
     // DEFAULTS
 
     // default options for squirrel.js.
-    /* jscs: disable */
+    /* eslint-disable */
     $.fn.squirrel.options = {
         clear_on_submit: true,
         storage_method: 'session',
         storage_key: 'squirrel',
         storage_key_prefix: '',
     };
-    /* jscs: enable */
+    /* eslint-enable */
 
     // onload.
     $(function squirrelReady() {
